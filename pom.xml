@@ -8,6 +8,7 @@
 		<module>jpa-demo</module>
 		<module>common-demo</module>
 		<module>atomikos-demo</module>
+		<module>xa-demo</module>
 	</modules>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
