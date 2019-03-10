@@ -19,10 +19,10 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 @EnableConfigurationProperties(value = {DBConfig1.class, DBConfig2.class})
 @SpringBootApplication
 @Import(CommonTest.class)
-public class AtomikosDemoApplication {
+public class AtomikosJpaDemoApplication {
 
     public static void main( String[] args ) {
-        SpringApplication.run(AtomikosDemoApplication.class, args);
+        SpringApplication.run(AtomikosJpaDemoApplication.class, args);
     }
 
 

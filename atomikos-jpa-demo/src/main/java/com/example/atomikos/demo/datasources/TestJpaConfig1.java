@@ -1,12 +1,13 @@
 package com.example.atomikos.demo.datasources;
 
 import com.example.atomikos.demo.AtomikosPlatform;
-import com.example.atomikos.demo.config.DBConfig2;
+import com.example.atomikos.demo.config.DBConfig1;
 import com.mysql.cj.jdbc.MysqlXADataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jta.atomikos.AtomikosDataSourceBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -15,18 +16,19 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.HashMap;
 
-@Configuration
-//basePackages 最好分开配置 如果放在同一个文件夹可能会报错
-@EnableJpaRepositories(basePackages = "com.example.atomikos.demo.test02", entityManagerFactoryRef = "customerEntityManager02")
-public class TestMyBatisConfig2 {
 
+@Configuration
+@EnableJpaRepositories(basePackages = "com.example.atomikos.demo.test01", entityManagerFactoryRef = "customerEntityManager")
+public class TestJpaConfig1 {
 
     @Autowired
     private JpaVendorAdapter jpaVendorAdapter;
 
     // 配置数据源
-    @Bean(name = "testDataSource2")
-    public DataSource testDataSource(DBConfig2 testConfig) throws SQLException {
+    //将DBConfig1穿入到我们的AtomikosDataSourceBean来进行管理
+    @Primary
+    @Bean(name = "testDataSource")
+    public DataSource testDataSource(DBConfig1 testConfig) throws SQLException {
         MysqlXADataSource mysqlXaDataSource = new MysqlXADataSource();
         mysqlXaDataSource.setUrl(testConfig.getUrl());
         mysqlXaDataSource.setPinGlobalTxToPhysicalConnection(true);
@@ -36,7 +38,7 @@ public class TestMyBatisConfig2 {
 
         AtomikosDataSourceBean xaDataSource = new AtomikosDataSourceBean();
         xaDataSource.setXaDataSource(mysqlXaDataSource);
-        xaDataSource.setUniqueResourceName("testDataSource2");
+        xaDataSource.setUniqueResourceName("testDataSource");
 
         xaDataSource.setMinPoolSize(testConfig.getMinPoolSize());
         xaDataSource.setMaxPoolSize(testConfig.getMaxPoolSize());
@@ -50,20 +52,20 @@ public class TestMyBatisConfig2 {
     }
 
 
-    @Bean(name = "customerEntityManager02")
-    public LocalContainerEntityManagerFactoryBean customerEntityManager02(DataSource testDataSource2) throws Throwable {
-
+    @Bean(name = "customerEntityManager")
+    public LocalContainerEntityManagerFactoryBean customerEntityManager(DataSource testDataSource) {
 
         HashMap<String, Object> properties = new HashMap<String, Object>();
         properties.put("hibernate.transaction.jta.platform", AtomikosPlatform.class.getName());
         properties.put("javax.persistence.transactionType", "JTA");
 
         LocalContainerEntityManagerFactoryBean entityManager = new LocalContainerEntityManagerFactoryBean();
-        entityManager.setJtaDataSource(testDataSource2);
+        entityManager.setJtaDataSource(testDataSource);
         entityManager.setJpaVendorAdapter(jpaVendorAdapter);
         entityManager.setPackagesToScan("com.example.atomikos.demo.po");
-        entityManager.setPersistenceUnitName("test02");
+        entityManager.setPersistenceUnitName("test01");
         entityManager.setJpaPropertyMap(properties);
         return entityManager;
     }
+
 }
