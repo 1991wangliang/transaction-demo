@@ -7,7 +7,8 @@
 		<module>mybatis-demo</module>
 		<module>jpa-demo</module>
 		<module>common-demo</module>
-		<module>atomikos-demo</module>
+		<module>atomikos-mybatis-demo</module>
+		<module>atomikos-jpa-demo</module>
 		<module>xa-demo</module>
 	</modules>
 	<parent>
